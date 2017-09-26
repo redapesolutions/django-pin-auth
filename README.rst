@@ -11,6 +11,9 @@ Django pin authentication
 .. image:: https://codecov.io/gh/matiboy/django-pin-auth/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/matiboy/django-pin-auth
 
+.. image:: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
+    :target: http://commitizen.github.io/cz-cli/
+
 Django pin based authentication
 
 Documentation
@@ -44,7 +47,7 @@ Add Django pin authentication's URL patterns:
 
     urlpatterns = [
         ...
-        url(r'^', include(django_pin_auth_urls)),
+        url(r'^pinauth', include(django_pin_auth_urls)),
         ...
     ]
 
