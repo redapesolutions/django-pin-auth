@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
-    "django_pin_auth",
+    "django_pin_auth.apps.DjangoPinAuthConfig",
 ]
 
 SITE_ID = 1
