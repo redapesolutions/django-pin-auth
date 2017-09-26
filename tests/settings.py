@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     "django_pin_auth.apps.DjangoPinAuthConfig",
 ]
 
+TIME_ZONE = 'America/Chicago'
+
 SITE_ID = 1
 
 if django.VERSION >= (1, 10):

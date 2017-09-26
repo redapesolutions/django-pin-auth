@@ -7,6 +7,8 @@ test_django-pin-auth
 
 Tests for `django-pin-auth` models module.
 """
+import mock
+import datetime
 
 from django.test import TestCase
 from django.apps import apps
@@ -16,7 +18,6 @@ from django_pin_auth.read_policies import ReadPolicy
 
 
 class TestCreateDelete(TestCase):
-
     def setUp(self):
         self.token = models.SingleUseToken.objects.create()
 
@@ -52,5 +53,32 @@ class TestCreateDelete(TestCase):
             raise AssertionError('Token should still exist')
         config.read_policy = ReadPolicy.delete
 
-    def tearDown(self):
-        pass
+
+class TestValidity(TestCase):
+
+    def setUp(self):
+        self.token = models.SingleUseToken.objects.create()
+
+    @mock.patch('django_pin_auth.models.datetime')
+    def test_valid_within_timerange(self, mock_dt):
+        """Token is valid within the time provided."""
+        config = apps.get_app_config('django_pin_auth')
+        mock_dt.datetime.now = mock.Mock(return_value=datetime.datetime.now(datetime.timezone.utc)+config.pin_validity-datetime.timedelta(seconds=1))
+        assert self.token.is_valid() is True
+
+    @mock.patch('django_pin_auth.models.datetime')
+    def test_invalid_after_timerange(self, mock_dt):
+        """Token is invalid after the time provided."""
+        config = apps.get_app_config('django_pin_auth')
+        mock_dt.datetime.now = mock.Mock(return_value=datetime.datetime.now(datetime.timezone.utc)+config.pin_validity+datetime.timedelta(seconds=1))
+        assert self.token.is_valid() is False
+    
+    @mock.patch('django_pin_auth.models.datetime')
+    def test_always_valid(self, mock_dt):
+        """Token is always valid if no time given."""
+        config = apps.get_app_config('django_pin_auth')
+        keep_value = config.pin_validity
+        config.pin_validity = None
+        mock_dt.datetime.now = mock.Mock(return_value=datetime.datetime(2713, 12, 25))
+        assert self.token.is_valid() is True
+        config.pin_validity = keep_value

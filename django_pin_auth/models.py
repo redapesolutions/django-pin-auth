@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
+import datetime
 
 from django.db import models
 from django.apps import apps
@@ -33,10 +34,14 @@ class SingleUseToken(TimeStampedModel, SoftDeletableModel):
         """Get the validity of the token.
         
         Looks at the time since creation and compares that with config value if any
-
-        TODO
         """
-        pass
+        # No validity set
+        if config.pin_validity is None:
+            return True
+
+        # Validity check
+        # TimeStampedModel sets a timezone aware dt, thankfully not depending on settings, but UTC
+        return datetime.datetime.now(datetime.timezone.utc) < self.created + config.pin_validity
 
     def read(self):
         """Read the token.
