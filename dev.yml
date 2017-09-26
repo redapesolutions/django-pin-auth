@@ -1,0 +1,37 @@
+version: '2'
+
+volumes:
+  postgres_data_dev: {}
+
+services:
+  postgres:
+    image: postgres:9.6
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=pin
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile-dev
+    command: /start-dev.sh
+    restart: on-failure
+    depends_on:
+      - postgres
+      - mailhog
+    environment:
+      - POSTGRES_USER=pin
+      - USE_DOCKER=yes
+    volumes:
+      - .:/pin
+      - ./compose/django/sample:/app
+    ports:
+      - "${DJANGO_PORT}:8000"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "${MAILHOG_PORT}:8025"
+
+  

@@ -1,0 +1,31 @@
+FROM python:3.6
+ENV PYTHONUNBUFFERED 1
+
+# Requirements have to be pulled and installed here, otherwise caching won't work
+RUN mkdir /requirements
+COPY ./requirements_dev.txt /requirements
+RUN pip install -r /requirements/requirements_dev.txt
+
+
+# This will allow us to develop on the library while running the django project
+RUN mkdir /pin
+COPY ./setup.py /pin
+COPY ./README.rst /pin
+COPY ./HISTORY.rst /pin
+COPY ./django_pin_auth /pin/django_pin_auth
+
+RUN ls -al /pin
+
+RUN pip install -e /pin
+
+COPY ./compose/django/entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r//' /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+COPY ./compose/django/start-dev.sh /start-dev.sh
+RUN sed -i 's/\r//' /start-dev.sh
+RUN chmod +x /start-dev.sh
+
+WORKDIR /app
+
+ENTRYPOINT ["/entrypoint.sh"]
