@@ -12,15 +12,20 @@ import datetime
 
 from django.test import TestCase
 from django.apps import apps
+from django.contrib.auth.models import User
+from faker import Faker
 
 from django_pin_auth import models
 from django_pin_auth.read_policies import ReadPolicy
 
+fake = Faker('ja_JP')  # anything that's UTF8 will do
 
-class TestCreateDelete(TestCase):
+class TokenCreate(TestCase):
     def setUp(self):
-        self.token = models.SingleUseToken.objects.create()
+        self.user = User.objects.create_user(username=fake.email())
+        self.token = models.SingleUseToken.objects.create(user=self.user)
 
+class TestCreateDelete(TokenCreate):
     def test_create_token_value(self):
         """Should automatically create a 6 digit token."""
         assert self.token.token.__len__() == 6
@@ -54,11 +59,7 @@ class TestCreateDelete(TestCase):
         config.read_policy = ReadPolicy.delete
 
 
-class TestValidity(TestCase):
-
-    def setUp(self):
-        self.token = models.SingleUseToken.objects.create()
-
+class TestValidity(TokenCreate):
     @mock.patch('django_pin_auth.models.datetime')
     def test_valid_within_timerange(self, mock_dt):
         """Token is valid within the time provided."""
@@ -82,3 +83,25 @@ class TestValidity(TestCase):
         mock_dt.datetime.now = mock.Mock(return_value=datetime.datetime(2713, 12, 25))
         assert self.token.is_valid() is True
         config.pin_validity = keep_value
+
+class TestUserToken(TokenCreate):
+    def setUp(self):
+        super().setUp()
+        # Copy the values and do it again
+        self.user2 = self.user
+        self.token2 = self.token
+        super().setUp()
+
+    def test_correct_user_token(self):
+        """Should find token."""
+        self.assertEqual(models.get_user_token(self.user, self.token.token), self.token)
+
+    def test_incorrect_user(self):
+        """Should not find token with not correct user."""
+        self.assertEqual(models.get_user_token(self.user2, self.token), None)
+    
+    def test_incorrect_token(self):
+        """Should not find token with not correct token.
+        
+        Well, which is incorrect is relative..."""
+        self.assertEqual(models.get_user_token(self.user2, self.token), None)

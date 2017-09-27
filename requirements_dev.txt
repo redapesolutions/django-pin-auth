@@ -5,3 +5,4 @@ pytest
 pytest-django
 django>=1.10
 psycopg2==2.7.3
+faker

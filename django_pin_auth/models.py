@@ -4,6 +4,7 @@ import datetime
 
 from django.db import models
 from django.apps import apps
+from django.conf import settings
 
 from model_utils.models import (
     TimeStampedModel,
@@ -14,10 +15,24 @@ from .read_policies import ReadPolicy
 
 config = apps.get_app_config('django_pin_auth')
 
+def get_user_token(user, token):
+    """Simple method to get user token.
+
+    Notes: Instead of creating a manager/queryset
+    """
+    try:
+        return SingleUseToken.objects.get(user=user, token=token)
+    except SingleUseToken.DoesNotExist:
+        return None
 
 class SingleUseToken(TimeStampedModel, SoftDeletableModel):
     """Single use token model. """
     token = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='tokens',
+        on_delete=models.CASCADE
+    )
 
     all_objects = models.Manager()
 
@@ -55,7 +70,7 @@ class SingleUseToken(TimeStampedModel, SoftDeletableModel):
             self.__class__.all_objects.filter(pk=self.pk).delete()
 
     def __str__(self):
-        return 'Singe use token %s' % self.token
+        return 'Single use token {} for user {}'.format(self.token, self.user)
     
 
 
