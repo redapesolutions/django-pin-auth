@@ -38,6 +38,10 @@ class RegisterForm(forms.Form):
         )
 
     def clean_email(self):
+        """Clean the email data.
+
+        Checks for unicity as well
+        """
         email = self.cleaned_data.get('email')
         if get_user_model().objects.filter(username=email).exists():
             raise forms.ValidationError(self._build_login_vs_register_message())
