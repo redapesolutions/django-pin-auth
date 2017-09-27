@@ -47,7 +47,7 @@ Add Django pin authentication's URL patterns:
 
     urlpatterns = [
         ...
-        url(r'^pinauth', include(django_pin_auth_urls)),
+        url(r'^pinauth', include(django_pin_auth_urls, namespace='django_pin_auth')),
         ...
     ]
 
