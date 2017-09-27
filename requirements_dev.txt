@@ -4,5 +4,4 @@ django-model-utils>=2.0
 pytest
 pytest-django
 django>=1.10
-psycopg2==2.7.3
 faker

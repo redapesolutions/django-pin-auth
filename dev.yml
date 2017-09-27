@@ -1,16 +1,6 @@
 version: '2'
 
-volumes:
-  postgres_data_dev: {}
-
 services:
-  postgres:
-    image: postgres:9.6
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=pin
-
   django:
     build:
       context: .
@@ -18,10 +8,8 @@ services:
     command: /start-dev.sh
     restart: on-failure
     depends_on:
-      - postgres
       - mailhog
     environment:
-      - POSTGRES_USER=pin
       - USE_DOCKER=yes
     volumes:
       - .:/pin
