@@ -6,7 +6,7 @@ from . import views
 
 urlpatterns = [
     url(
-        regex="^register$",
+        regex="register$",
         view=views.RegisterView.as_view(),
         name='register',
     )]

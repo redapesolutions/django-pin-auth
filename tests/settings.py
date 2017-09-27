@@ -22,8 +22,10 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
-    "django_pin_auth",
+    "django_pin_auth.apps.DjangoPinAuthConfig",
 ]
+
+TIME_ZONE = 'America/Chicago'
 
 SITE_ID = 1
 
