@@ -56,7 +56,7 @@ setup(
         'django_pin_auth',
     ],
     include_package_data=True,
-    install_requires=["django-model-utils>=2.0",],
+    install_requires=["django-model-utils>=2.0"],
     license="MIT",
     zip_safe=False,
     keywords='django-pin-auth',

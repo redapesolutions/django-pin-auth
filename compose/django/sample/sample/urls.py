@@ -18,5 +18,5 @@ from django.contrib import admin
 from django_pin_auth import urls as django_pin_auth_urls
 
 urlpatterns = [
-    url(r'^pinauth', include(django_pin_auth_urls)),
+    url(r'^pinauth/', include(django_pin_auth_urls, namespace='django_pin_auth')),
 ]

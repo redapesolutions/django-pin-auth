@@ -6,7 +6,13 @@ from . import views
 
 urlpatterns = [
     url(
-        regex="register$",
+        regex=r"register/?$",
         view=views.RegisterView.as_view(),
         name='register',
-    )]
+    ),
+    url(
+        regex=r"enterpin/?$",
+        view=views.EnterPinView.as_view(),
+        name='enter_pin',
+    ),
+]
