@@ -40,7 +40,7 @@ class TestFormUserCreate(TestCase):
         form.is_valid()
         form.save()
         assert form.user.username == email
-        assert form.user.password != ''
+        assert form.user.has_usable_password() is False
 
 
 class TestFormTokenCreate(TestCase):

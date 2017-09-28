@@ -7,24 +7,31 @@ from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
-from password_generator import generate
 
 from .models import SingleUseToken
 
 
 class RegisterForm(forms.Form):
     email = forms.EmailField(label='Please provide a valid email')
+    register_body_template = 'django_pin_auth/emails/register_body.html'
+    register_body_subject = 'django_pin_auth/emails/register_subject.txt'
+
+    def get_register_body_template(self):
+        return self.register_body_template
+
+    def get_register_body_subject(self):
+        return self.register_body_subject
 
     def send_email(self, request):
         """Send registration email."""
         email = self.cleaned_data['email']
         context = self._build_context(request, pin=self.token.token)
         html = render_to_string(
-            'django_pin_auth/emails/register_body.html',
+            self.get_register_body_template(),
             context
         )
         subject = render_to_string(
-            'django_pin_auth/emails/register_subject.txt',
+            self.get_register_body_subject(),
             context
         )
         sender = self._get_email_sender(request)
@@ -57,15 +64,22 @@ class RegisterForm(forms.Form):
         Checks for unicity as well
         """
         email = self.cleaned_data.get('email')
-        if get_user_model().objects.filter(username=email).exists():
+        user_model = get_user_model()
+        filter_kw = {
+            user_model.USERNAME_FIELD: email
+        }
+        if user_model.objects.filter(**filter_kw).exists():
             raise forms.ValidationError(self._build_login_vs_register_message())
         return email
 
-    def _generate_password(self):
-        return generate(length=50, chars=[chr(i) for i in range(127)])
-
     def create_user(self, email):
-        return get_user_model().objects.create(username=email, password=self._generate_password())
+        user_model = get_user_model()
+        kwargs = {
+            user_model.USERNAME_FIELD: email
+        }
+        user = user_model.objects.create(**kwargs)
+        user.set_unusable_password()
+        return user
 
     def create_token(self, user):
         return SingleUseToken.objects.create(user=user)
