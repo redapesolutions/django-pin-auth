@@ -18,7 +18,7 @@ class RegisterForm(forms.Form):
     def send_email(self, request):
         """Send registration email."""
         email = self.cleaned_data['email']
-        context = self._build_context(request, pin='1223')
+        context = self._build_context(request, pin=self.token.token)
         html = render_to_string(
             'django_pin_auth/emails/register_body.html',
             context

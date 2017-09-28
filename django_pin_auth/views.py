@@ -19,6 +19,7 @@ class RegisterView(FormView):
 
     def form_valid(self, form):
         """Handle valid form."""
+        form.save()
         form.send_email(self.request)
         return redirect('django_pin_auth:enter_pin')
 
