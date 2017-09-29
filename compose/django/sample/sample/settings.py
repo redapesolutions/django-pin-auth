@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_pin_auth',
+    'django_pin_auth.apps.DjangoPinAuthConfig',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +80,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django_pin_auth.auth_backend.PinBackend',
+]
 
 
 # Password validation

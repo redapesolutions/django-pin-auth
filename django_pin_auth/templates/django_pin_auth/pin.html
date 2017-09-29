@@ -4,7 +4,7 @@
 {% block content %}
 {% block above_pin %}
 {% endblock %}
-<form action="{% url 'django_pin_auth:enter_pin' %}/" method="post">
+<form method="post">
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var pins = document.querySelectorAll('input[name^=pin]')
@@ -36,5 +36,6 @@
   </script>
   {% csrf_token %}
   {{form}}
+  <button type="submit">Verify pin</button>
 </form>
 {% endblock %}

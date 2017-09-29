@@ -15,4 +15,9 @@ urlpatterns = [
         view=views.EnterPinView.as_view(),
         name='enter_pin',
     ),
+    url(
+        regex=r"welcome/?$",
+        view=views.RegistrationEnterPinView.as_view(),
+        name='register_pin',
+    ),
 ]
