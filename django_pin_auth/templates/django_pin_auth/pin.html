@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block }
+{% block content %}
+{% block above_pin %}
+{% endblock %}
+<form action="{% url 'django_pin_auth:enter_pin' %}/" method="post">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var pins = document.querySelectorAll('input[name^=pin]')
+      pins.forEach(function(el, index) {
+        el.addEventListener('keydown', function(e) {
+          if(index>0) {
+            if(e.code === 'Backspace' && el.value === '') {
+              pins[index-1].value = ''
+              pins[index-1].focus()
+            }
+          }
+        })
+        el.addEventListener('keyup', function(e) {
+          // Backspace on empty
+          if(index !== pins.length - 1) {
+            if(el.value.length>1) {
+              // Paste likely
+              el.value.split('').forEach(function(char, index) {
+                pins[index].value = char
+              })
+            }
+            if(el.value) {
+              pins[index+1].focus()
+            }
+          }
+        })
+      })
+    })
+  </script>
+  {% csrf_token %}
+  {{form}}
+</form>
+{% endblock %}

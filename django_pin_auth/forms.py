@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 
 from .models import SingleUseToken
-
+from .widgets import SplitInputWidget
 
 class RegisterForm(forms.Form):
     email = forms.EmailField(label='Please provide a valid email')
@@ -88,3 +88,9 @@ class RegisterForm(forms.Form):
         """Create user and token."""
         self.user = self.create_user(self.cleaned_data['email'])
         self.token = self.create_token(self.user)
+
+
+class PinForm(forms.Form):
+    email = forms.EmailField(widget=forms.HiddenInput())
+    pin = forms.CharField(widget=SplitInputWidget())
+
