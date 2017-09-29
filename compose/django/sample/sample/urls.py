@@ -16,7 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django_pin_auth import urls as django_pin_auth_urls
+from django.http import HttpResponse
 
 urlpatterns = [
     url(r'^pinauth/', include(django_pin_auth_urls, namespace='django_pin_auth')),
+    url(r'^hello$', lambda _: HttpResponse('After login'))
 ]

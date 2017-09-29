@@ -38,7 +38,7 @@ class TestFormUserCreate(TestCase):
         })
         # Need to use is_valid to get cleaned data
         form.is_valid()
-        form.save()
+        form.prepare_form()
         assert form.user.username == email
         assert form.user.has_usable_password() is False
 
@@ -51,8 +51,8 @@ class TestFormTokenCreate(TestCase):
             'email': email
         })
         # Need to use is_valid to get cleaned data
-        form.is_valid()
-        form.save()
+        assert form.is_valid()
+        form.prepare_form()
         assert form.token.user == form.user
         assert form.token.is_valid()
 
@@ -65,7 +65,6 @@ class TestSendEmail(TestCase):
             'email': self.email
         })
         self.form.is_valid()
-        self.form.save()
         self.request = RequestFactory().get('/')
 
     def test_sender_set_correctly(self):

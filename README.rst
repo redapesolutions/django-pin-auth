@@ -51,6 +51,11 @@ Add Django pin authentication's URL patterns:
         ...
     ]
 
+Requirements
+------------
+
+You must have sessions enabled.
+
 Features
 --------
 

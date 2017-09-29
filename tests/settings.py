@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
+    "django.contrib.sessions",
     "django_pin_auth.apps.DjangoPinAuthConfig",
 ]
 
@@ -29,10 +30,10 @@ TIME_ZONE = 'America/Chicago'
 
 SITE_ID = 1
 
-if django.VERSION >= (1, 10):
-    MIDDLEWARE = ()
-else:
-    MIDDLEWARE_CLASSES = ()
+
+MIDDLEWARE = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+)
 
 
 TEMPLATES = [
@@ -49,4 +50,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+LOGIN_URL = 'pinauth/enterpin'
+LOGIN_REDIRECT_URL = '/hello'
+
+AUTHENTICATION_BACKENDS = [
+    'django_pin_auth.auth_backend.PinBackend',
 ]

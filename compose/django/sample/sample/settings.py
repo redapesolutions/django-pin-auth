@@ -128,3 +128,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'mailhog'
 EMAIL_PORT = 1025
 EMAIL_TIMEOUT = 5
+
+LOGIN_URL = 'pinauth/enterpin'
+LOGIN_REDIRECT_URL = '/hello'
