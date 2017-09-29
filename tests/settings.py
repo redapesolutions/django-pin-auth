@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 from __future__ import unicode_literals, absolute_import
-
+import os
 import django
 
 DEBUG = True
@@ -35,11 +35,12 @@ MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
 )
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'tests', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

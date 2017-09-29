@@ -95,6 +95,7 @@ class RegisterForm(LoginForm):
         return email
 
     def get_user(self, user_model, **kwargs):
+        """Create user."""
         user = user_model.objects.create(**kwargs)
         user.set_unusable_password()
         return user
@@ -105,6 +106,7 @@ class PinForm(forms.Form):
     pin = SplitCharField()
 
     def clean(self):
+        """Perform last validation by checking that user can authenticate."""
         self.user = authenticate(self.request, **self.cleaned_data)
 
         if self.user is None:

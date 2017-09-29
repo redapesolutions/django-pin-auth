@@ -36,11 +36,10 @@ class TestVerification(TestCase):
     def test_fails_when_wrong_token(self):
         """Should redirect and not end up with authenticated user."""
         response = self.attempt_to_authenticate(None, self.token1)
-        assert response.status_code == 302
+        assert response.status_code == 200
         user = get_user(self.client)
         assert user.is_authenticated() is False
-        print(self.url, response.url)
-        assert response.url == self.url
+        assert response.request['PATH_INFO'] == self.url
 
     def test_success_with_valid(self):
         """Should have the correct user and redirect."""
@@ -48,4 +47,4 @@ class TestVerification(TestCase):
         user = get_user(self.client)
         assert user.is_authenticated()
         assert user == self.user
-        assert response.url == '/hello'
+        assert response.url == '/hello'  # redirected to settings' login redirect url
