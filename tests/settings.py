@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 from __future__ import unicode_literals, absolute_import
-
+import os
 import django
 
 DEBUG = True
@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
+    "django.contrib.sessions",
     "django_pin_auth.apps.DjangoPinAuthConfig",
 ]
 
@@ -29,16 +30,17 @@ TIME_ZONE = 'America/Chicago'
 
 SITE_ID = 1
 
-if django.VERSION >= (1, 10):
-    MIDDLEWARE = ()
-else:
-    MIDDLEWARE_CLASSES = ()
 
+MIDDLEWARE = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+)
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'tests', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -49,4 +51,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+LOGIN_URL = 'pinauth/enterpin'
+LOGIN_REDIRECT_URL = '/hello'
+
+AUTHENTICATION_BACKENDS = [
+    'django_pin_auth.auth_backend.PinBackend',
 ]
