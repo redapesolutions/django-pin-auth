@@ -58,6 +58,9 @@ class SingleUseToken(TimeStampedModel, SoftDeletableModel):
         # TimeStampedModel sets a timezone aware dt, thankfully not depending on settings, but UTC
         return datetime.datetime.now(datetime.timezone.utc) < self.created + config.pin_validity
 
+    def valid_until_timestamp(self):
+        return int((self.created + config.pin_validity).timestamp())
+
     def read(self):
         """Read the token.
         

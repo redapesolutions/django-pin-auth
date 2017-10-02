@@ -15,13 +15,13 @@ from .fields import SplitCharField
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Please provide a valid email')
     body_template = 'django_pin_auth/emails/login_body.html'
-    body_subject = 'django_pin_auth/emails/login_subject.txt'
+    subject_template = 'django_pin_auth/emails/login_subject.txt'
 
     def get_register_body_template(self):
         return self.body_template
 
-    def get_register_body_subject(self):
-        return self.body_subject
+    def get_register_subject_template(self):
+        return self.subject_template
 
     def get_user(self, user_model, **kwargs):
         return user_model.objects.get(**kwargs)
@@ -41,13 +41,13 @@ class LoginForm(forms.Form):
     def send_email(self, request):
         """Send pin email."""
         self.prepare_form()
-        context = self._build_context(request, pin=self.token.token)
+        context = self._build_context(request, token=self.token, valid_until=self.token.valid_until_timestamp(), pin=self.token.token)
         html = render_to_string(
             self.get_register_body_template(),
             context
         )
         subject = render_to_string(
-            self.get_register_body_subject(),
+            self.get_register_subject_template(),
             context
         )
         sender = self._get_email_sender(request)
@@ -71,7 +71,7 @@ class LoginForm(forms.Form):
 
 class RegisterForm(LoginForm):
     body_template = 'django_pin_auth/emails/register_body.html'
-    body_subject = 'django_pin_auth/emails/register_subject.txt'
+    subject_template = 'django_pin_auth/emails/register_subject.txt'
 
     def _build_login_vs_register_message(self):
         """Helper to build a "friendly" message"""

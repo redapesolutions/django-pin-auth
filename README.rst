@@ -56,6 +56,18 @@ Requirements
 
 You must have sessions enabled.
 
+Development
+-----------
+
+You can get an environment with a dev project set up very quickly with Docker:
+
+::
+
+    export COMPOSE_FILE=dev.yml
+    docker-compose up
+
+If need be, you can modify the environment variables as declared in the ``.env`` file
+
 Features
 --------
 
