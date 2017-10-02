@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% block }
 {% block content %}
 {% block above_pin %}
 {% endblock %}
@@ -36,6 +35,8 @@
   </script>
   {% csrf_token %}
   {{form}}
-  <button type="submit">Verify pin</button>
+  <p>
+    <button class="pure-button pure-button-primary" type="submit">Verify pin</button>
+  </p>
 </form>
 {% endblock %}

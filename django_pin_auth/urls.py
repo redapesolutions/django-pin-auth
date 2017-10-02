@@ -14,5 +14,10 @@ urlpatterns = [
         regex=r"enterpin/?$",
         view=views.EnterPinView.as_view(),
         name='enter_pin',
+    ),
+    url(
+        regex=r"login/?$",
+        view=views.LoginView.as_view(),
+        name='login',
     )
 ]

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<form class="pure-form pure-form-aligned" method="post">
+  {% csrf_token %}
+  <fieldset>
+  {{form}}
+  </fieldset>
+</form>
+{% endblock %}

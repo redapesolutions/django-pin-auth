@@ -11,17 +11,22 @@ from django.contrib.sites.shortcuts import get_current_site
 from .models import SingleUseToken
 from .fields import SplitCharField
 
+def _get_user_model(email):
+    user_model = get_user_model()
+    return (user_model, {
+        user_model.USERNAME_FIELD: email
+    })
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Please provide a valid email')
     body_template = 'django_pin_auth/emails/login_body.html'
-    body_subject = 'django_pin_auth/emails/login_subject.txt'
+    subject_template = 'django_pin_auth/emails/login_subject.txt'
 
     def get_register_body_template(self):
         return self.body_template
 
-    def get_register_body_subject(self):
-        return self.body_subject
+    def get_register_subject_template(self):
+        return self.subject_template
 
     def get_user(self, user_model, **kwargs):
         return user_model.objects.get(**kwargs)
@@ -31,23 +36,31 @@ class LoginForm(forms.Form):
 
     def prepare_form(self):
         email = self.cleaned_data['email']
-        user_model = get_user_model()
-        kwargs = {
-            user_model.USERNAME_FIELD: email
-        }
+        user_model, kwargs = _get_user_model(email)
         self.user = self.get_user(user_model, **kwargs)
         self.token = self.create_token(self.user)
+
+    def clean_email(self):
+        """Clean the email data.
+
+        Checks that email exists in db
+        """
+        email = self.cleaned_data.get('email')
+        user_model, filter_kw = _get_user_model(email)
+        if not user_model.objects.filter(**filter_kw).exists():
+            raise forms.ValidationError('Invalid user')
+        return email
 
     def send_email(self, request):
         """Send pin email."""
         self.prepare_form()
-        context = self._build_context(request, pin=self.token.token)
+        context = self._build_context(request, token=self.token, valid_until=self.token.valid_until_timestamp(), pin=self.token.token)
         html = render_to_string(
             self.get_register_body_template(),
             context
         )
         subject = render_to_string(
-            self.get_register_body_subject(),
+            self.get_register_subject_template(),
             context
         )
         sender = self._get_email_sender(request)
@@ -71,7 +84,7 @@ class LoginForm(forms.Form):
 
 class RegisterForm(LoginForm):
     body_template = 'django_pin_auth/emails/register_body.html'
-    body_subject = 'django_pin_auth/emails/register_subject.txt'
+    subject_template = 'django_pin_auth/emails/register_subject.txt'
 
     def _build_login_vs_register_message(self):
         """Helper to build a "friendly" message"""
@@ -86,10 +99,7 @@ class RegisterForm(LoginForm):
         Checks for unicity
         """
         email = self.cleaned_data.get('email')
-        user_model = get_user_model()
-        filter_kw = {
-            user_model.USERNAME_FIELD: email
-        }
+        user_model, filter_kw = _get_user_model(email)
         if user_model.objects.filter(**filter_kw).exists():
             raise forms.ValidationError(self._build_login_vs_register_message())
         return email
