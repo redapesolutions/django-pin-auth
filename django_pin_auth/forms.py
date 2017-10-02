@@ -11,6 +11,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from .models import SingleUseToken
 from .fields import SplitCharField
 
+def _get_user_model(email):
+    user_model = get_user_model()
+    return (user_model, {
+        user_model.USERNAME_FIELD: email
+    })
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Please provide a valid email')
@@ -31,12 +36,20 @@ class LoginForm(forms.Form):
 
     def prepare_form(self):
         email = self.cleaned_data['email']
-        user_model = get_user_model()
-        kwargs = {
-            user_model.USERNAME_FIELD: email
-        }
+        user_model, kwargs = _get_user_model(email)
         self.user = self.get_user(user_model, **kwargs)
         self.token = self.create_token(self.user)
+
+    def clean_email(self):
+        """Clean the email data.
+
+        Checks that email exists in db
+        """
+        email = self.cleaned_data.get('email')
+        user_model, filter_kw = _get_user_model(email)
+        if not user_model.objects.filter(**filter_kw).exists():
+            raise forms.ValidationError('Invalid user')
+        return email
 
     def send_email(self, request):
         """Send pin email."""
@@ -86,10 +99,7 @@ class RegisterForm(LoginForm):
         Checks for unicity
         """
         email = self.cleaned_data.get('email')
-        user_model = get_user_model()
-        filter_kw = {
-            user_model.USERNAME_FIELD: email
-        }
+        user_model, filter_kw = _get_user_model(email)
         if user_model.objects.filter(**filter_kw).exists():
             raise forms.ValidationError(self._build_login_vs_register_message())
         return email
