@@ -1,6 +1,7 @@
 import mock
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
+from django.apps import apps
 from faker import Faker
 
 from django_pin_auth.models import SingleUseToken
@@ -46,3 +47,32 @@ class TestAuth(TestCase):
         """Returns the user."""
         assert self.backend.authenticate(self.request, email=self.user1.username, pin=self.token1a.token) == self.user1
     
+
+class TestAuthEmail(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username='lalala', email=fake.email())
+        self.token1a = SingleUseToken.objects.create(user=self.user1)
+        self.backend = PinBackend()
+        self.request = RequestFactory().get('/')
+        self.config = apps.get_app_config('django_pin_auth')
+
+    def test_default_match_username(self):
+        """Should try to match using username by default."""
+        assert self.backend.authenticate(self.request, email=self.user1.username, pin=self.token1a.token) == self.user1
+
+    def test_default_dont_match_email(self):
+        """Should fail if email is passed instead of username."""
+        assert self.backend.authenticate(self.request, email=self.user1.email, pin=self.token1a.token) is None
+
+    def test_match_field_per_config(self):
+        """Should match email if specified."""
+        self.config.username_field = 'email'
+        assert self.backend.authenticate(self.request, email=self.user1.email, pin=self.token1a.token) == self.user1
+    
+    def test_dont_match_username_if_config(self):
+        """Should match email if specified."""
+        self.config.username_field = 'email'
+        assert self.backend.authenticate(self.request, email=self.user1.username, pin=self.token1a.token) == None
+
+    def tearDown(self):
+        self.config.username_field = 'username'

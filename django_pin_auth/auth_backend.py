@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.apps import apps
 
 from .models import SingleUseToken
+
+config = apps.get_app_config('django_pin_auth')
 
 class PinBackend(object):
     """Authentication backend based on pin value."""
@@ -20,7 +23,7 @@ class PinBackend(object):
         """Get the token for corresponding user and pin."""
         user_model = get_user_model()
         kwargs = {
-            'user__%s' % user_model.USERNAME_FIELD: email,
+            'user__%s' % config.username_field: email,
             'token': pin
         }
         return SingleUseToken.objects.get(**kwargs)

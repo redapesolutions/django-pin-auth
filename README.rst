@@ -71,7 +71,9 @@ If need be, you can modify the environment variables as declared in the ``.env``
 Features
 --------
 
-* TODO
+* Register using email only
+* Send out email including PIN
+* Login using PIN
 
 Running Tests
 -------------
@@ -94,3 +96,8 @@ Tools used in rendering this package:
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`cookiecutter-djangopackage`: https://github.com/pydanny/cookiecutter-djangopackage
+
+Reviews
+-------
+
+Code reviews performed by _Jafnee: https://github.com/Jafnee
