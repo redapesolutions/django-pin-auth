@@ -11,10 +11,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from .models import SingleUseToken
 from .fields import SplitCharField
 
+config = apps.get_app_config('django_pin_auth')
+
 def _get_user_model(email):
+    """Get user model and filter kwargs for finding a user."""
     user_model = get_user_model()
     return (user_model, {
-        user_model.USERNAME_FIELD: email
+        config.username_field: email
     })
 
 class LoginForm(forms.Form):
